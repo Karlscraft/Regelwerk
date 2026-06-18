@@ -1,0 +1,21 @@
+# .github/workflows/wiki-notify.yml
+name: Wiki Change Notification
+
+on:
+  gollum:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord-Benachrichtigung senden
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          PAGE="${{ github.event.pages[0].title }}"
+          ACTION="${{ github.event.pages[0].action }}"
+          URL="${{ github.event.pages[0].html_url }}"
+          ACTOR="${{ github.actor }}"
+          curl -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "{\"content\": \"📜 **Regelwerk aktualisiert!**\n**Seite:** $PAGE\n**Aktion:** $ACTION\n**Autor:** $ACTOR\n🔗 $URL\"}"
